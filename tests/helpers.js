@@ -15,12 +15,16 @@ async function useUkMarket(page) {
 
 // The main add-to-cart button. Themes often render a second, sticky copy that
 // sits off-screen until you scroll, and `.first()` can land on that one and
-// then fail with "element is outside of the viewport" (run #1). Exclude
-// anything sticky, then fall back to Shopify's conventional button[name="add"].
+// then fail with "element is outside of the viewport" (run #1). Only visible
+// buttons count, sticky ones are excluded, then fall back to Shopify's
+// conventional button[name="add"]. The Sept 2026 redesign relabelled it
+// "Add to bag", so either wording matches.
+const ADD_TO_CART_TEXT = /add to (cart|bag)/i;
+
 function addToCartButton(page) {
   const nonSticky = page
     .locator('button:not([class*="sticky"])')
-    .filter({ hasText: /add to cart/i })
+    .filter({ hasText: ADD_TO_CART_TEXT, visible: true })
     .first();
   return {
     async resolve() {
@@ -28,6 +32,49 @@ function addToCartButton(page) {
       return page.locator('button[name="add"]').first();
     },
   };
+}
+
+// --- Cookie consent ---
+// Since the Sept 2026 redesign the store shows Shopify's cookie banner, and
+// the Meta pixel (plus GA and Pinterest) only loads once a visitor accepts
+// marketing cookies. Run of 26 Sep saw zero pixel calls because nobody
+// accepted. The banner also sits over the bottom of the page, where it can
+// swallow clicks on mobile.
+const BANNER = '.shopify-pc__banner';
+
+// True if Shopify wants a consent banner for this visitor's region (decided by
+// IP, so it can differ between a UK laptop and a US GitHub runner).
+async function consentRequired(page) {
+  await page.waitForFunction(() => window.Shopify && window.Shopify.customerPrivacy, null, { timeout: 10_000 }).catch(() => {});
+  return page
+    .evaluate(() => {
+      const cp = window.Shopify && window.Shopify.customerPrivacy;
+      return cp && typeof cp.shouldShowBanner === 'function' ? Boolean(cp.shouldShowBanner()) : false;
+    })
+    .catch(() => false);
+}
+
+// Accept (for tracking tests) or decline (everything else) via the banner if
+// it's showing, otherwise through Shopify's Customer Privacy API. Declining is
+// the default: it's what a privacy-minded shopper does, and it keeps test runs
+// out of every tracking tool.
+async function setConsent(page, accept) {
+  const button = page.locator(`${BANNER}__btn-${accept ? 'accept' : 'decline'}`);
+  if (await button.isVisible({ timeout: 4_000 }).catch(() => false)) {
+    await button.click();
+    await page.locator(BANNER).waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {});
+    return;
+  }
+  await page
+    .evaluate((yes) => {
+      const cp = window.Shopify && window.Shopify.customerPrivacy;
+      if (!cp || typeof cp.setTrackingConsent !== 'function') return;
+      return new Promise((resolve) => {
+        cp.setTrackingConsent({ analytics: yes, marketing: yes, preferences: yes, sale_of_data: yes }, resolve);
+        setTimeout(resolve, 3000);
+      });
+    }, accept)
+    .catch(() => {});
 }
 
 // --- Meta Pixel event capture ---
@@ -130,6 +177,10 @@ async function installPixelNetworkCapture(page) {
 // Meta fake PageViews/AddToCarts; the pixel tests register their capture
 // route after this one, so it still sees (then aborts) every event first.
 // scripts/lighthouse-log.mjs blocks the same list.
+// Microsoft Clarity (session recordings + heatmaps) is blocked too, so CI runs
+// never show up as recordings from a US datacentre. tests/tracking.spec.js
+// lets the Clarity tag itself load to check it's installed, but still blocks
+// its uploads.
 const ANALYTICS_BEACONS =
   /\/\.well-known\/shopify\/monorail|monorail-edge\.shopifysvc\.com|\/api\/collect|google-analytics\.com|analytics\.google\.com|merchant-center-analytics\.goog|clarity\.ms|facebook\.com\/tr/;
 
@@ -165,6 +216,9 @@ function extractPixelEventName(url, body) {
 module.exports = {
   useUkMarket,
   addToCartButton,
+  ADD_TO_CART_TEXT,
+  consentRequired,
+  setConsent,
   installPixelHook,
   pixelEvents,
   isMetaPixelRequest,

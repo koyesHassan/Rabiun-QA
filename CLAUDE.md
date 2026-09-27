@@ -19,6 +19,18 @@ and Meta pixel integrity.
   `page.route` instead.
 - `networkidle` never fires on Shopify pages (constant pixel chatter);
   use `domcontentloaded`.
+- Since the Sept 2026 redesign a Shopify cookie banner gates the Meta pixel,
+  GA and Pinterest. Tests call `setConsent(page, accept)` from helpers.js:
+  pixel tests accept, everything else declines (the banner also covers the
+  bottom of the mobile screen and can swallow clicks). Clarity runs
+  cookieless before consent, by design.
+- The TinySEO app turns any 404 that gets a few hits into a permanent
+  redirect to the homepage. Never probe random made-up URLs: each one ends
+  up as a junk redirect in Shopify admin. audit.spec.js uses one fixed URL.
+- Blocking analytics beacons makes some Shopify scripts throw "Failed to
+  fetch". That's the test, not the site; audit.spec.js ignores those.
+- Weak spots that shouldn't turn the run red go in `audit.spec.js` as
+  `advisory` annotations (public text: counts and page names only).
 - `.github/workflows/qa-daily.yml` is edited by hand by the owner, on
   GitHub's website. The workflow runs with the repo's secrets, so a human
   signs off on every change, and Claude Code's safety check blocks Claude
