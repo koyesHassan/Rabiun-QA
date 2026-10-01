@@ -14,7 +14,8 @@ and Meta pixel integrity.
   cookies `localization=GB` + `cart_currency=GBP` are set directly.
 - Mobile project must force `browserName: 'chromium'` — the iPhone
   device preset defaults to WebKit, which the workflow doesn't install.
-- The Meta pixel is a Shopify custom pixel in a sandboxed iframe; 
+- The Meta pixel is the Facebook & Instagram app's app pixel (Server + Web,
+  data access "Always on"; checked 1 Oct 2026), running in a sandboxed iframe; 
   `fbq()` hooks see nothing — capture at the network level via 
   `page.route` instead.
 - `networkidle` never fires on Shopify pages (constant pixel chatter);

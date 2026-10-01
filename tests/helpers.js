@@ -78,7 +78,7 @@ async function setConsent(page, accept) {
 }
 
 // --- Meta Pixel event capture ---
-// On rabiun.com the Meta Pixel is loaded by a Shopify *custom pixel*, which
+// On rabiun.com the Meta Pixel is loaded by the Facebook & Instagram app pixel, which
 // runs inside a sandboxed same-origin iframe (/web-pixels@.../sandbox/...).
 // Its network calls go out as beacons whose body Playwright can't read, so
 // run #2 saw facebook.com/tr requests but no event names. Instead, hook fbq()
@@ -113,7 +113,7 @@ async function installPixelHook(page) {
   });
 }
 
-// Collect recorded pixel events from every frame (the custom pixel lives in an
+// Collect recorded pixel events from every frame (the app pixel lives in an
 // iframe, so the main frame alone would come back empty).
 async function pixelEvents(page) {
   const all = [];
