@@ -96,8 +96,13 @@ test('Advisory — image alt text', async ({ page }, testInfo) => {
 // visit shows up as "direct" in Shopify and ad reporting can't credit it.
 test('Advisory — ad tracking tags survive landing', async ({ page }, testInfo) => {
   desktopOnly(testInfo);
-  for (const path of ['/', PRODUCT_PAGES[0].path, '/collections/all']) {
-    const name = path === '/' ? 'Homepage' : path === '/collections/all' ? 'Shop all' : PRODUCT_PAGES[0].name;
+  // Every page ads actually point at, plus the homepage.
+  const landings = [
+    { name: 'Homepage', path: '/' },
+    ...PRODUCT_PAGES,
+    ...OTHER_PAGES.filter((p) => p.path.startsWith('/collections/')),
+  ];
+  for (const { name, path } of landings) {
     await check(`UTM tags kept on landing — ${name}`, async () => {
       await page.goto(`${path}?utm_source=qa-check&utm_medium=qa&utm_campaign=qa-check`, { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(1500);

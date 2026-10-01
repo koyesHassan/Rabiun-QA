@@ -94,8 +94,9 @@ lessons learned, so neither of us has to learn them twice.
 ## Known gaps (being worked on)
 
 - **The Meta vs Shopify cross-check is built but switched off** until API keys are added.
-- **The mobile add-to-cart test is occasionally flaky** (it passes on retry). It needs a more
-  reliable wait.
+- **Shopify still counts test visits.** Blocking tracking beacons keeps tests out of Meta and other
+  ad tools, but Shopify counts sessions on its own servers. Test traffic now openly identifies as a
+  bot so Shopify can label it; whether Shopify's bot filter picks it up is still being checked.
 
 ## Run it yourself
 

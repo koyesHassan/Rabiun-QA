@@ -119,14 +119,17 @@ for (const p of PRODUCT_PAGES) {
     await button.click();
 
     // Confirm the cart actually registered the item via Shopify's cart.js —
-    // the most theme-independent signal there is.
-    await page.waitForTimeout(1500);
-    const cartResponse = await page.request.get('/cart.js');
-    const cartJson = await cartResponse.json().catch(() => ({ item_count: 0 }));
-    expect(
-      cartJson.item_count,
-      `${p.name}: cart did not register an item after clicking Add to cart (cart.js item_count=${cartJson.item_count})`
-    ).toBeGreaterThan(0);
+    // the most theme-independent signal there is. Polled for up to 10s: a
+    // fixed 1.5s wait was sometimes too short and made this test flaky.
+    await expect
+      .poll(
+        async () => {
+          const cartResponse = await page.request.get('/cart.js');
+          return (await cartResponse.json().catch(() => ({ item_count: 0 }))).item_count;
+        },
+        { message: `${p.name}: cart did not register an item after clicking Add to cart`, timeout: 10_000 }
+      )
+      .toBeGreaterThan(0);
 
     await page.request.post('/cart/clear.js').catch(() => {});
   });

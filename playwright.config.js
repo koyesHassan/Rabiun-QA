@@ -3,6 +3,15 @@ const { defineConfig, devices } = require('@playwright/test');
 
 const BASE_URL = process.env.SITE_BASE_URL || 'https://rabiun.com';
 
+// Test traffic says openly that it's a bot. Blocking analytics beacons stops
+// tracking pixels, but Shopify still counted QA runs as sessions and
+// add-to-carts server-side (~850 "direct US" sessions, 23 Sep - 1 Oct 2026),
+// which skews conversion rates. A self-declared bot user agent gives Shopify's
+// "human or bot" session label the strongest signal we can send. The mobile
+// project keeps the iPhone user agent (so the theme serves its mobile layout)
+// with the same tag on the end.
+const BOT_TAG = 'RabiunQA-bot/1.0 (+https://github.com/koyesHassan/Rabiun-QA)';
+
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 45_000,
@@ -30,7 +39,7 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'desktop-chrome',
-      use: { ...devices['Desktop Chrome'], userAgent: 'RabiunQA/1.0', },
+      use: { ...devices['Desktop Chrome'], userAgent: `Mozilla/5.0 (compatible; ${BOT_TAG})` },
     },
     {
       // iPhone viewport/UA, but run in Chromium. The iPhone device preset
@@ -38,7 +47,7 @@ module.exports = defineConfig({
       // test in run #1 died on "Executable doesn't exist ... webkit". Chromium
       // with mobile emulation is what we need for layout checks anyway.
       name: 'mobile',
-      use: { ...devices['iPhone 13'], browserName: 'chromium' },
+      use: { ...devices['iPhone 13'], browserName: 'chromium', userAgent: `${devices['iPhone 13'].userAgent} ${BOT_TAG}` },
     },
   ],
 });

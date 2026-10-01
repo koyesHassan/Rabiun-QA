@@ -12,6 +12,8 @@ const PAGES = [
   { name: 'jeans', path: '/products/rabiun-heavyweight-selvedge-denim-forest-green-yellow-overdye' },
   { name: 'hat-green-leopard', path: '/products/rabiun-double-brim-painters-hat-green-and-leopard' },
   { name: 'hat-black-zebra', path: '/products/double-brim-painters-hat-black-and-zebra-print' },
+  // Ad landing page for the Oct 2026 Meta carousel.
+  { name: 'hats-collection', path: '/collections/hats' },
 ];
 
 const CSV_PATH = path.join(process.cwd(), 'data', 'lighthouse-history.csv');
@@ -33,6 +35,9 @@ async function runLighthouseFor(url) {
       output: 'json',
       onlyCategories: ['performance', 'seo', 'accessibility', 'best-practices'],
       formFactor: 'mobile',
+      // Same self-declared bot tag as playwright.config.js, so Shopify can
+      // label these visits as bots too.
+      emulatedUserAgent: 'Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36 Chrome-Lighthouse RabiunQA-bot/1.0 (+https://github.com/koyesHassan/Rabiun-QA)',
       // Same beacons tests/helpers.js blocks, so Lighthouse runs don't show
       // up as Shopify sessions or Meta events.
       blockedUrlPatterns: [

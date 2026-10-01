@@ -24,6 +24,8 @@ module.exports.OTHER_PAGES = [
   // No meta description as of 2026-09-27. tests/audit.spec.js reports it as
   // an advisory; drop this flag once one is set in Shopify admin.
   { name: 'Shop all', path: '/collections/all', metaDescriptionOptional: true },
+  // Ad landing page: the Oct 2026 Meta carousel cards link here.
+  { name: 'Hats collection', path: '/collections/hats' },
   { name: 'Checkout entry (cart)', path: '/cart' },
   { name: 'FAQ / Contact', path: '/pages/contact' },
 ];
