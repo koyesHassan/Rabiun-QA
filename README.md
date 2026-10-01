@@ -95,8 +95,9 @@ lessons learned, so neither of us has to learn them twice.
 
 - **The Meta vs Shopify cross-check is built but switched off** until API keys are added.
 - **Shopify still counts test visits.** Blocking tracking beacons keeps tests out of Meta and other
-  ad tools, but Shopify counts sessions on its own servers. Test traffic now openly identifies as a
-  bot so Shopify can label it; whether Shopify's bot filter picks it up is still being checked.
+  ad tools, but Shopify counts sessions on its own servers. Tagging test traffic as a bot was tried
+  and dropped: Shopify then serves a different site (no pixels, no cart), so the tests stop seeing
+  what shoppers see. QA visits show up as direct US traffic, which is easy to filter out.
 
 ## Run it yourself
 
