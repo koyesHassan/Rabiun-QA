@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { test, expect } = require('@playwright/test');
 const { PRODUCT_PAGES, OTHER_PAGES, REDIRECT_CHECKS } = require('./pages');
-const { useUkMarket, addToCartButton, blockAnalyticsBeacons } = require('./helpers');
+const { useUkMarket, addToCartButton, blockAnalyticsBeacons, setConsent } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await useUkMarket(page);
@@ -73,7 +73,7 @@ for (const p of [...PRODUCT_PAGES, ...OTHER_PAGES]) {
     expect(title.trim().length, `${p.name} has an empty <title>`).toBeGreaterThan(0);
 
     // Shopify's /cart page has no meta description by design — don't alert on it.
-    if (!p.path.startsWith('/cart')) {
+    if (!p.path.startsWith('/cart') && !p.metaDescriptionOptional) {
       const metaDescription = await page
         .locator('meta[name="description"]')
         .getAttribute('content')
@@ -97,6 +97,8 @@ for (const p of [...PRODUCT_PAGES, ...OTHER_PAGES]) {
 for (const p of PRODUCT_PAGES) {
   test(`${p.name} — price and add-to-cart present and working`, async ({ page }) => {
     await page.goto(p.path, { waitUntil: 'load' });
+    // Decline cookies: the banner covers the bottom of the screen on mobile.
+    await setConsent(page, false);
 
     // Price: Shopify's standard og:price meta tags, not a theme CSS class.
     const ogPrice = await page.locator('meta[property="og:price:amount"]').getAttribute('content').catch(() => null);
@@ -111,7 +113,7 @@ for (const p of PRODUCT_PAGES) {
     }
 
     const button = await addToCartButton(page).resolve();
-    await expect(button, `${p.name} has no visible "Add to cart" button`).toBeVisible();
+    await expect(button, `${p.name} has no visible "Add to cart" / "Add to bag" button`).toBeVisible();
     await expect(button, `${p.name} add-to-cart button is disabled (out of stock / bug)`).toBeEnabled();
     await button.scrollIntoViewIfNeeded();
     await button.click();
@@ -144,6 +146,8 @@ for (const p of PRODUCT_PAGES) {
   test(`${p.name} — mobile layout screenshot`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Screenshot only needed once, on the mobile project');
     await page.goto(p.path, { waitUntil: 'load' });
+    await setConsent(page, false);
+    await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(1500);
 
     // Rolling baseline: compare against the previous run's screenshot, then
@@ -152,25 +156,53 @@ for (const p of PRODUCT_PAGES) {
     // baseline. Baselines live in data/snapshots/, which the workflow restores
     // from and saves to the qa-data branch — without that, every run would
     // start with no baseline and never compare.
-    const snapshotName = `${p.path.replace(/\//g, '_')}.png`;
+    // "v2" = the Sept 2026 redesign. A new name starts a fresh baseline
+    // instead of diffing the new theme against the old one.
+    const snapshotName = `v2${p.path.replace(/\//g, '_')}.png`;
     const baselinePath = testInfo.snapshotPath(snapshotName);
     const hadBaseline = fs.existsSync(baselinePath);
-    // Screenshot only the product section (gallery, title, price, size,
-    // add-to-cart, info tabs): the layout that matters for a sale. The full
-    // page isn't stable: the "Worn by you" customer-photo carousel rotates on
-    // every load and changes as new customers are added, and lower sections
-    // load late and change the page height. Baselines stick to product content.
-    const productSection = page.locator('.shopify-section').filter({ hasText: /add to cart/i }).first();
-    await expect(productSection, `${p.name}: product section not found`).toBeVisible();
+    // Screenshot only the product info block (title, price, sizes, add to bag,
+    // info tabs): the layout that matters for a sale. The full page isn't
+    // stable: the photo gallery and the "Worn by" customer-photo carousel
+    // rotate and change as new photos are added. The block is found as the
+    // closest ancestor of the buy button that also holds the <h1>, so it
+    // doesn't depend on the theme's class names (the old theme's did, and
+    // broke in the Sept 2026 redesign).
+    const buy = await addToCartButton(page).resolve();
+    const productSection = buy.locator('xpath=ancestor::*[.//h1][1]');
+    await expect(productSection, `${p.name}: product info block not found`).toBeVisible();
+    // Blank out the parts that change on their own: the delivery estimate
+    // moves every day, and the "Worn by you" strip grows with each customer
+    // photo. Everything else in the block should only change when the site does.
+    const mask = [
+      productSection.getByText(/estimated delivery/i),
+      productSection.locator('section, div').filter({ hasText: /worn by/i }),
+    ];
+    // Wait for every image in the block (e.g. the "Also in" thumbnail, added
+    // late Sept). Under a full parallel run a lazy image could still be blank
+    // when the shot was taken, so the baseline and the next run disagreed.
+    await productSection.evaluate((el) =>
+      Promise.all(
+        [...el.querySelectorAll('img')].map((img) => {
+          img.loading = 'eager';
+          if (img.complete && img.naturalWidth) return null;
+          return new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+            setTimeout(resolve, 8000);
+          });
+        })
+      )
+    );
     try {
       if (hadBaseline) {
-        await expect(productSection).toHaveScreenshot(snapshotName, { maxDiffPixelRatio: 0.01 });
+        await expect(productSection).toHaveScreenshot(snapshotName, { maxDiffPixelRatio: 0.01, mask });
       } else {
         testInfo.annotations.push({ type: 'baseline', description: `No baseline yet; recording ${snapshotName}` });
       }
     } finally {
       // scale: 'css' matches toHaveScreenshot (device scale would be 3x on iPhone).
-      const shot = await productSection.screenshot({ animations: 'disabled', caret: 'hide', scale: 'css' });
+      const shot = await productSection.screenshot({ animations: 'disabled', caret: 'hide', scale: 'css', mask });
       await testInfo.attach('mobile-screenshot', { body: shot, contentType: 'image/png' });
       fs.mkdirSync(path.dirname(baselinePath), { recursive: true });
       fs.writeFileSync(baselinePath, shot);

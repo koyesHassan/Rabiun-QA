@@ -8,6 +8,7 @@ const {
   pixelEvents,
   installPixelNetworkCapture,
   blockAnalyticsBeacons,
+  setConsent,
 } = require('./helpers');
 
 // Checks that the Meta Pixel actually fires on the two events that matter for
@@ -20,6 +21,11 @@ const {
 // facebook.com/tr requests intercepted at the network layer with their bodies.
 // The pixel on rabiun.com runs inside Shopify's custom-pixel sandbox, which is
 // why belt-and-braces is warranted here.
+//
+// Since the Sept 2026 redesign the pixel only loads after a shopper accepts
+// marketing cookies, so each test accepts them first: these tests check the
+// pixel works for shoppers who opt in. tests/tracking.spec.js checks the other
+// half, that nothing fires for shoppers who haven't.
 
 async function observedEvents(page, network) {
   const hooked = await pixelEvents(page);
@@ -39,6 +45,7 @@ for (const p of PRODUCT_PAGES) {
     const network = await installPixelNetworkCapture(page);
 
     await page.goto(p.path, { waitUntil: 'domcontentloaded' });
+    await setConsent(page, true);
     await page.waitForTimeout(5000);
 
     const o = await observedEvents(page, network);
@@ -58,7 +65,8 @@ for (const p of PRODUCT_PAGES) {
     const network = await installPixelNetworkCapture(page);
 
     await page.goto(p.path, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
+    await setConsent(page, true);
+    await page.waitForTimeout(4000);
     const before = network.length;
 
     const button = await addToCartButton(page).resolve();

@@ -44,6 +44,10 @@ async function runLighthouseFor(url) {
         '*merchant-center-analytics.goog*',
         '*clarity.ms*',
         '*facebook.com/tr*',
+        '*ct.pinterest.com*',
+        '*googleadservices.com*',
+        '*doubleclick.net*',
+        '*analytics.tiktok.com*',
       ],
       screenEmulation: { mobile: true, width: 390, height: 844, deviceScaleFactor: 2, disabled: false },
     });

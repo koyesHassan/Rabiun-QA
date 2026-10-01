@@ -125,6 +125,22 @@ function renderSessions({ history, latest, weekOnWeek, baselineLabel }, changes)
     ${changeList}`;
 }
 
+// Weak spots: advisory checks that don't fail the run. Open ones first,
+// oldest first, so long-standing issues stay at the top.
+function renderAdvisories(adv) {
+  if (!adv || !adv.items.length) return '<p style="color:#999">No advisory checks in this run.</p>';
+  const rank = (a) => (a.ok === false ? 0 : a.ok === null ? 1 : 2);
+  const items = [...adv.items].sort((a, b) => rank(a) - rank(b) || String(a.openSince).localeCompare(String(b.openSince)));
+  const rows = items
+    .map((a) => {
+      const [cls, label] = a.ok === false ? ['status-warn', 'WEAK'] : a.ok === null ? ['status-off', 'N/A'] : ['status-pass', 'OK'];
+      return `<tr><td><span class="status ${cls}">${label}</span></td><td>${escapeHtml(a.id)}</td><td style="color:#999">${escapeHtml(a.detail)}${a.openSince ? ` · open since ${escapeHtml(a.openSince)}` : ''}</td></tr>`;
+    })
+    .join('');
+  return `<div class="stats" style="margin:0 0 8px">${adv.open} open · ${adv.passing} fine. These never fail the run.</div>
+    <table style="max-width:900px">${rows}</table>`;
+}
+
 export function render(data) {
   const run = data.latestRun || { passed: 0, failed: 0, skipped: 0, checks: [] };
   const failures = run.checks.filter((c) => c.status === 'failed');
@@ -170,6 +186,11 @@ export function render(data) {
       clean-run streak ${s.currentCleanStreak} (best ${s.longestCleanStreak}) ·
       ${pct(s.cleanRunRate30)} of the last 30 runs fully green
     </div>
+  </section>
+
+  <section>
+    <h2 style="font-size:15px">Weak spots (advisory checks)</h2>
+    ${renderAdvisories(data.advisories)}
   </section>
 
   <section>

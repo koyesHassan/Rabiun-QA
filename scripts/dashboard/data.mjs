@@ -4,8 +4,9 @@
 // the numbers, and the numbers never have to know about the look.
 //
 // Public repo: only QA facts go in here (check names, pass/fail, timings,
-// Lighthouse scores). Never test stdout/annotations, which can carry
-// tracking IDs. From the private-API cross-check, only its one-word result
+// Lighthouse scores). Never test stdout or annotations, which can carry
+// tracking IDs, with one exception: `advisory` annotations from
+// tests/audit.spec.js, whose text is written to be public (see that file). From the private-API cross-check, only its one-word result
 // (match / mismatch / error / skipped), never counts. Shopify sessions only
 // as an index (baseline = 100), never raw counts.
 import fs from 'node:fs';
@@ -20,6 +21,7 @@ const RUN_HISTORY_CSV = path.join(ROOT, 'data', 'run-history.csv');
 const CHECK_HISTORY_CSV = path.join(ROOT, 'data', 'check-history.csv');
 const LIGHTHOUSE_CSV = path.join(ROOT, 'data', 'lighthouse-history.csv');
 const TRACKING_CSV = path.join(ROOT, 'data', 'tracking-history.csv');
+const ADVISORY_CSV = path.join(ROOT, 'data', 'advisory-history.csv');
 // Both live on main in insights/, updated by PR (not by CI). The sessions
 // trend is imported by hand (see scripts/shopify-sessions.mjs); changes.csv
 // is the public list of site/social changes shown as chart markers.
@@ -29,11 +31,15 @@ const CHANGES_CSV = path.join(ROOT, 'insights', 'changes.csv');
 // New columns only ever go on the end (see appendCsv).
 const RUN_COLUMNS = ['date', 'passed', 'failed', 'skipped', 'time', 'flaky', 'duration_ms'];
 const CHECK_COLUMNS = ['date', 'time', 'check', 'project', 'status', 'retries', 'duration_ms'];
+const ADVISORY_COLUMNS = ['date', 'time', 'advisory', 'project', 'ok', 'detail'];
 
 // Groups checks by what they protect. Handy for any theme that wants zones,
 // classes or categories rather than one long list.
 function categoryOf(file, title) {
-  if (file.includes('pixel')) return 'tracking';
+  if (file.includes('audit')) return 'advisory';
+  if (file.includes('pixel') || /Clarity|consent/i.test(title)) return 'tracking';
+  if (file.includes('privacy')) return 'privacy';
+  if (file.includes('journey')) return 'shopping';
   if (/^Redirect/.test(title)) return 'redirects';
   if (/mobile layout/.test(title)) return 'layout';
   if (/add-to-cart/.test(title)) return 'shopping';
@@ -45,6 +51,7 @@ function readThisRun() {
   const raw = JSON.parse(fs.readFileSync(RESULTS_JSON, 'utf8'));
   const started = raw.stats?.startTime ? new Date(raw.stats.startTime) : new Date();
   const checks = [];
+  const advisories = [];
 
   function walk(suite, file) {
     for (const spec of suite.specs || []) {
@@ -68,6 +75,13 @@ function readThisRun() {
           retries: Math.max(0, results.length - 1),
           durationMs: Math.round(results.reduce((sum, r) => sum + (r.duration || 0), 0)),
         });
+        for (const a of last?.annotations || test.annotations || []) {
+          if (a.type !== 'advisory') continue;
+          try {
+            const { id, ok, detail } = JSON.parse(a.description);
+            advisories.push({ id: String(id), project: test.projectName, ok: ok === null ? null : Boolean(ok), detail: String(detail || '') });
+          } catch {}
+        }
       }
     }
     for (const s of suite.suites || []) walk(s, file);
@@ -85,6 +99,7 @@ function readThisRun() {
     flaky: count('flaky'),
     durationMs: Math.round(raw.stats?.duration || 0),
     checks,
+    advisories,
   };
 }
 
@@ -98,6 +113,30 @@ function recordRun(run) {
     CHECK_COLUMNS,
     run.checks.map((c) => ({ date: run.date, time: run.time, check: c.name, project: c.project, status: c.status, retries: c.retries, duration_ms: c.durationMs }))
   );
+  appendCsv(
+    ADVISORY_CSV,
+    ADVISORY_COLUMNS,
+    run.advisories.map((a) => ({ date: run.date, time: run.time, advisory: a.id, project: a.project, ok: a.ok === null ? '' : a.ok ? 1 : 0, detail: a.detail }))
+  );
+}
+
+// Weak spots from tests/audit.spec.js: today's verdicts, each with the date it
+// has been open since (start of its current unbroken run of warnings), so a
+// fix shows up as the warning disappearing and a regression as a fresh date.
+function advisoryData(rows, latest) {
+  const openSince = new Map();
+  for (const r of rows) {
+    const key = `${r.advisory}|${r.project}`;
+    if (r.ok === '0') {
+      if (!openSince.has(key)) openSince.set(key, r.date);
+    } else if (r.ok === '1') openSince.delete(key);
+  }
+  const items = (latest || []).map((a) => ({ ...a, openSince: a.ok === false ? openSince.get(`${a.id}|${a.project}`) || null : null }));
+  return {
+    open: items.filter((a) => a.ok === false).length,
+    passing: items.filter((a) => a.ok === true).length,
+    items,
+  };
 }
 
 const num = (v) => (v === '' || v == null || Number.isNaN(Number(v)) ? null : Number(v));
@@ -233,6 +272,7 @@ export function buildDashboardData({ record = true } = {}) {
     runHistory: runs,
     lighthouse: lighthouseData(readCsv(LIGHTHOUSE_CSV)),
     tracking: trackingData(readCsv(TRACKING_CSV)),
+    advisories: advisoryData(readCsv(ADVISORY_CSV), thisRun?.advisories),
     sessions: sessionsData(readCsv(SESSIONS_CSV)),
     changes: readCsv(CHANGES_CSV).filter((c) => c.date),
   };

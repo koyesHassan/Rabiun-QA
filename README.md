@@ -20,14 +20,25 @@ as my engineering partner.
 | **Page health** | Homepage, product pages, cart and contact page load with no errors, broken images or failed requests | A broken page is a lost sale |
 | **Pricing** | Each product shows the right price, in **GBP** | Catches pricing mistakes and currency bugs before customers do |
 | **Add to cart** | The button is visible and enabled, and actually adds the item | This is the one flow that has to work |
-| **Mobile layout** | Each product section (photos, title, price, size, add-to-cart) is compared with the previous run's screenshot | Catches a broken layout on the device most customers use |
-| **SEO basics** | Title, meta description and product structured data are present | Keeps products findable on Google |
-| **Meta pixel** | PageView, ViewContent and AddToCart events fire, checked at the network level | If tracking silently breaks, ad spend goes blind |
+| **Shopper journey** | "Shop now" leads to products, every product for sale is in the shop, sold-out sizes match real stock, and the cart hands off to Shopify checkout | Every step is somewhere a paid visitor can drop out |
+| **Mobile layout** | Each product's info block (title, price, sizes, add to bag) is compared with the previous run's screenshot | Catches a broken layout on the device most customers use |
+| **SEO basics** | Title, meta description and structured data are present | Keeps products findable on Google |
+| **Meta pixel** | For shoppers who accept cookies, PageView, ViewContent and AddToCart fire, checked at the network level | If tracking silently breaks, ad spend goes blind |
+| **Consent and privacy** | Nothing tracks a shopper before they accept cookies, Microsoft Clarity is installed, and no email address other than the shop's appears on public pages | UK privacy law, and a leak caught the day it appears |
+| **Weak spots** | Advisory checks that never fail the run: Google product data, alt text, whether ad tracking tags survive landing, "Add to bag" on the first mobile screen, page weight, dead-link handling | A to-do list for conversion and SEO, with how long each item has been open |
 | **Performance** | Lighthouse scores (performance, SEO, accessibility, best practices) for every page, every day | Trends over time, not a one-off snapshot |
 
-36 tests across a desktop and a mobile browser, run every day and on every pull request.
+About 55 checks across a desktop and a mobile browser, run every day and on every pull request.
 
 ## What it's found so far
+
+**A redesign that broke every test except the site.** In September 2026 I rebuilt the storefront.
+The next morning 21 checks failed, but the store was fine: the button now said "Add to bag", and a
+new cookie banner meant the Meta pixel waited for shoppers to accept. The fix was to make the tests
+act like a real shopper (decline or accept cookies, look for either wording) and to add a check that
+nothing tracks anyone before they accept. The audit that followed turned up weak spots that the old
+tests couldn't see: product pages had lost the structured data Google uses for price and stock, and
+an SEO app was quietly redirecting every dead link to the homepage.
 
 **The homepage is the slowest page on the site.** On mobile it scores **38/100** for performance
 and takes about **7.9 seconds** to show its main content. The product pages score 56–63. That's a
@@ -103,7 +114,10 @@ npm run dashboard            # builds dashboard/index.html
 tests/
   pages.js                  pages and products under test
   site-health.spec.js       page loads, price, add-to-cart, SEO, mobile screenshots
+  journey.spec.js           shop page, sizes vs stock, cart to checkout
   pixel.spec.js             Meta pixel checks
+  privacy.spec.js           cookie consent, Clarity, no stray emails
+  audit.spec.js             weak spots (advisory, never fails the run)
 scripts/
   lighthouse-log.mjs        Lighthouse audit, appends to the history CSV
   meta-shopify-crosscheck.mjs   Meta vs Shopify tracking check (optional)
