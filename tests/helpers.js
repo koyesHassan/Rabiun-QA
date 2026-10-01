@@ -176,13 +176,17 @@ async function installPixelNetworkCapture(page) {
 // sessions. facebook.com/tr is here too so the non-pixel tests stop sending
 // Meta fake PageViews/AddToCarts; the pixel tests register their capture
 // route after this one, so it still sees (then aborts) every event first.
+// Pinterest (ct.pinterest.com) too: the pixel tests accept cookies, which
+// switches its tag on, and a probe on 1 Oct 2026 saw ~4 Pinterest events
+// per test getting out. Google Ads and TikTok hosts are listed ahead of
+// time, so adding either app never quietly feeds them test traffic.
 // scripts/lighthouse-log.mjs blocks the same list.
 // Microsoft Clarity (session recordings + heatmaps) is blocked too, so CI runs
 // never show up as recordings from a US datacentre. tests/tracking.spec.js
 // lets the Clarity tag itself load to check it's installed, but still blocks
 // its uploads.
 const ANALYTICS_BEACONS =
-  /\/\.well-known\/shopify\/monorail|monorail-edge\.shopifysvc\.com|\/api\/collect|google-analytics\.com|analytics\.google\.com|merchant-center-analytics\.goog|clarity\.ms|facebook\.com\/tr/;
+  /\/\.well-known\/shopify\/monorail|monorail-edge\.shopifysvc\.com|\/api\/collect|google-analytics\.com|analytics\.google\.com|merchant-center-analytics\.goog|clarity\.ms|facebook\.com\/tr|ct\.pinterest\.com|googleadservices\.com|doubleclick\.net|analytics\.tiktok\.com/;
 
 async function blockAnalyticsBeacons(page) {
   await page.route(ANALYTICS_BEACONS, (route) =>
