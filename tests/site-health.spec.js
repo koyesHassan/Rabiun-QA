@@ -178,6 +178,22 @@ for (const p of PRODUCT_PAGES) {
       productSection.getByText(/estimated delivery/i),
       productSection.locator('section, div').filter({ hasText: /worn by/i }),
     ];
+    // Wait for every image in the block (e.g. the "Also in" thumbnail, added
+    // late Sept). Under a full parallel run a lazy image could still be blank
+    // when the shot was taken, so the baseline and the next run disagreed.
+    await productSection.evaluate((el) =>
+      Promise.all(
+        [...el.querySelectorAll('img')].map((img) => {
+          img.loading = 'eager';
+          if (img.complete && img.naturalWidth) return null;
+          return new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+            setTimeout(resolve, 8000);
+          });
+        })
+      )
+    );
     try {
       if (hadBaseline) {
         await expect(productSection).toHaveScreenshot(snapshotName, { maxDiffPixelRatio: 0.01, mask });
