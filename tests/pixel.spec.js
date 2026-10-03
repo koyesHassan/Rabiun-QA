@@ -37,6 +37,13 @@ function describe(o) {
   return `fbq hook: [${o.hooked.join(', ')}], network ev: [${o.fromNetwork.join(', ')}], facebook.com/tr calls: ${o.calls}`;
 }
 
+// Desktop only: the pixel is the same code on every device, and running on
+// the mobile project too added 6 more sessions and 3 add-to-carts per run to
+// Shopify's analytics (Shopify counts test visits server-side, beacons or not).
+test.beforeEach(async ({}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chrome', 'Pixel checked on desktop only, to keep test traffic down');
+});
+
 for (const p of PRODUCT_PAGES) {
   test(`${p.name} — Meta Pixel fires PageView/ViewContent on page load`, async ({ page }) => {
     await useUkMarket(page);

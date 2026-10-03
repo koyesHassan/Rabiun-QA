@@ -12,6 +12,8 @@ const PAGES = [
   { name: 'jeans', path: '/products/rabiun-heavyweight-selvedge-denim-forest-green-yellow-overdye' },
   { name: 'hat-green-leopard', path: '/products/rabiun-double-brim-painters-hat-green-and-leopard' },
   { name: 'hat-black-zebra', path: '/products/double-brim-painters-hat-black-and-zebra-print' },
+  // Ad landing page for the Oct 2026 Meta carousel.
+  { name: 'hats-collection', path: '/collections/hats' },
 ];
 
 const CSV_PATH = path.join(process.cwd(), 'data', 'lighthouse-history.csv');
