@@ -220,3 +220,26 @@ date,time,advisory,project,ok,detail
 2026-10-08,13:10:23,Add to bag without scrolling (mobile) — Hat (Black & Zebra),mobile,0,Bottom edge is 248px below the first screen
 2026-10-08,13:10:23,Page weight (mobile) — Homepage,mobile,0,3.5 MB transferred in the first few seconds (aim: under 3 MB)
 2026-10-08,13:10:23,Page weight (mobile) — Jeans (Selvedge Denim),mobile,1,1.2 MB transferred in the first few seconds (aim: under 3 MB)
+2026-10-09,12:57:08,Product structured data — Jeans (Selvedge Denim),desktop-chrome,0,No Product schema with price/stock (found: Organization)
+2026-10-09,12:57:08,Product structured data — Hat (Green & Leopard),desktop-chrome,0,No Product schema with price/stock (found: Organization)
+2026-10-09,12:57:08,Product structured data — Hat (Black & Zebra),desktop-chrome,0,No Product schema with price/stock (found: Organization)
+2026-10-09,12:57:08,Meta descriptions — key pages,desktop-chrome,0,Missing on: Shop all
+2026-10-09,12:57:08,Image alt text — Jeans (Selvedge Denim),desktop-chrome,0,9 of 27 images have no alt text
+2026-10-09,12:57:08,Image alt text — Hat (Green & Leopard),desktop-chrome,0,9 of 26 images have no alt text
+2026-10-09,12:57:08,Image alt text — Hat (Black & Zebra),desktop-chrome,0,9 of 26 images have no alt text
+2026-10-09,12:57:08,UTM tags kept on landing — Homepage,desktop-chrome,1,Kept
+2026-10-09,12:57:08,UTM tags kept on landing — Jeans (Selvedge Denim),desktop-chrome,1,Kept
+2026-10-09,12:57:08,UTM tags kept on landing — Hat (Green & Leopard),desktop-chrome,1,Kept
+2026-10-09,12:57:08,UTM tags kept on landing — Hat (Black & Zebra),desktop-chrome,1,Kept
+2026-10-09,12:57:08,UTM tags kept on landing — Shop all,desktop-chrome,1,Kept
+2026-10-09,12:57:08,UTM tags kept on landing — Hats collection,desktop-chrome,1,Kept
+2026-10-09,12:57:08,JavaScript errors — Homepage,desktop-chrome,0,1 uncaught error(s) on load
+2026-10-09,12:57:08,JavaScript errors — Jeans (Selvedge Denim),desktop-chrome,1,0 uncaught error(s) on load
+2026-10-09,12:57:08,JavaScript errors — Hat (Green & Leopard),desktop-chrome,0,1 uncaught error(s) on load
+2026-10-09,12:57:08,JavaScript errors — Hat (Black & Zebra),desktop-chrome,1,0 uncaught error(s) on load
+2026-10-09,12:57:08,Missing pages return a real 404,desktop-chrome,0,Redirects to the homepage (HTTP 200) instead of a 404
+2026-10-09,12:57:08,Add to bag without scrolling (mobile) — Jeans (Selvedge Denim),mobile,0,Bottom edge is 162px below the first screen
+2026-10-09,12:57:08,Add to bag without scrolling (mobile) — Hat (Green & Leopard),mobile,0,Bottom edge is 248px below the first screen
+2026-10-09,12:57:08,Add to bag without scrolling (mobile) — Hat (Black & Zebra),mobile,0,Bottom edge is 248px below the first screen
+2026-10-09,12:57:08,Page weight (mobile) — Homepage,mobile,0,3.5 MB transferred in the first few seconds (aim: under 3 MB)
+2026-10-09,12:57:08,Page weight (mobile) — Jeans (Selvedge Denim),mobile,1,1.1 MB transferred in the first few seconds (aim: under 3 MB)
