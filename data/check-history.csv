@@ -1753,3 +1753,77 @@ date,time,check,project,status,retries,duration_ms
 2026-10-14,06:02:06,Jeans (Selvedge Denim) — mobile layout screenshot,mobile,passed,0,22549
 2026-10-14,06:02:06,Hat (Green & Leopard) — mobile layout screenshot,mobile,passed,0,22070
 2026-10-14,06:02:06,Hat (Black & Zebra) — mobile layout screenshot,mobile,passed,0,17324
+2026-10-14,11:34:01,Advisory — Product structured data for Google,desktop-chrome,passed,0,1401
+2026-10-14,11:34:01,Advisory — meta descriptions,desktop-chrome,passed,0,2786
+2026-10-14,11:34:01,Advisory — image alt text,desktop-chrome,passed,0,7294
+2026-10-14,11:34:01,Advisory — ad tracking tags survive landing,desktop-chrome,passed,0,23001
+2026-10-14,11:34:01,Advisory — JavaScript errors,desktop-chrome,passed,0,25847
+2026-10-14,11:34:01,Advisory — Add to bag on the first mobile screen,desktop-chrome,skipped,0,151
+2026-10-14,11:34:01,Advisory — mobile page weight,desktop-chrome,skipped,0,119
+2026-10-14,11:34:01,Advisory — missing pages,desktop-chrome,passed,0,3634
+2026-10-14,11:34:01,Advisory — Product structured data for Google,mobile,skipped,0,294
+2026-10-14,11:34:01,Advisory — meta descriptions,mobile,skipped,0,255
+2026-10-14,11:34:01,Advisory — image alt text,mobile,skipped,0,181
+2026-10-14,11:34:01,Advisory — ad tracking tags survive landing,mobile,skipped,0,170
+2026-10-14,11:34:01,Advisory — JavaScript errors,mobile,skipped,0,165
+2026-10-14,11:34:01,Advisory — Add to bag on the first mobile screen,mobile,passed,0,24056
+2026-10-14,11:34:01,Advisory — mobile page weight,mobile,passed,0,12978
+2026-10-14,11:34:01,Advisory — missing pages,mobile,skipped,0,186
+2026-10-14,11:34:01,"Homepage — ""Shop now"" leads to products",desktop-chrome,passed,0,5113
+2026-10-14,11:34:01,Shop all — every product for sale is listed,desktop-chrome,passed,0,2381
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — sold-out sizes match stock,desktop-chrome,passed,0,3614
+2026-10-14,11:34:01,Hat (Green & Leopard) — sold-out sizes match stock,desktop-chrome,skipped,0,285
+2026-10-14,11:34:01,Hat (Black & Zebra) — sold-out sizes match stock,desktop-chrome,skipped,0,345
+2026-10-14,11:34:01,Checkout — add-to-cart through to the checkout page,desktop-chrome,passed,0,13411
+2026-10-14,11:34:01,"Homepage — ""Shop now"" leads to products",mobile,passed,0,5588
+2026-10-14,11:34:01,Shop all — every product for sale is listed,mobile,passed,0,2836
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — sold-out sizes match stock,mobile,passed,0,9639
+2026-10-14,11:34:01,Hat (Green & Leopard) — sold-out sizes match stock,mobile,skipped,0,397
+2026-10-14,11:34:01,Hat (Black & Zebra) — sold-out sizes match stock,mobile,skipped,0,296
+2026-10-14,11:34:01,Checkout — add-to-cart through to the checkout page,mobile,passed,0,11449
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — Meta Pixel fires PageView/ViewContent on page load,desktop-chrome,passed,0,8529
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — Meta Pixel fires AddToCart on add-to-cart click,desktop-chrome,passed,0,13489
+2026-10-14,11:34:01,Hat (Green & Leopard) — Meta Pixel fires PageView/ViewContent on page load,desktop-chrome,passed,0,7783
+2026-10-14,11:34:01,Hat (Green & Leopard) — Meta Pixel fires AddToCart on add-to-cart click,desktop-chrome,passed,0,12580
+2026-10-14,11:34:01,Hat (Black & Zebra) — Meta Pixel fires PageView/ViewContent on page load,desktop-chrome,passed,0,8525
+2026-10-14,11:34:01,Hat (Black & Zebra) — Meta Pixel fires AddToCart on add-to-cart click,desktop-chrome,passed,0,12770
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — Meta Pixel fires PageView/ViewContent on page load,mobile,skipped,0,29
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — Meta Pixel fires AddToCart on add-to-cart click,mobile,skipped,0,6
+2026-10-14,11:34:01,Hat (Green & Leopard) — Meta Pixel fires PageView/ViewContent on page load,mobile,skipped,0,2
+2026-10-14,11:34:01,Hat (Green & Leopard) — Meta Pixel fires AddToCart on add-to-cart click,mobile,skipped,0,3
+2026-10-14,11:34:01,Hat (Black & Zebra) — Meta Pixel fires PageView/ViewContent on page load,mobile,skipped,0,1
+2026-10-14,11:34:01,Hat (Black & Zebra) — Meta Pixel fires AddToCart on add-to-cart click,mobile,skipped,0,1
+2026-10-14,11:34:01,Cookie consent — no tracking before a shopper accepts,desktop-chrome,passed,0,8503
+2026-10-14,11:34:01,Microsoft Clarity — installed and loading,desktop-chrome,passed,0,2391
+2026-10-14,11:34:01,Public pages — no email address except the shop’s own,desktop-chrome,passed,0,6220
+2026-10-14,11:34:01,Cookie consent — no tracking before a shopper accepts,mobile,skipped,0,171
+2026-10-14,11:34:01,Microsoft Clarity — installed and loading,mobile,skipped,0,189
+2026-10-14,11:34:01,Public pages — no email address except the shop’s own,mobile,skipped,0,222
+2026-10-14,11:34:01,"Jeans (Selvedge Denim) — loads, no broken images, SEO basics present",desktop-chrome,passed,0,4678
+2026-10-14,11:34:01,"Hat (Green & Leopard) — loads, no broken images, SEO basics present",desktop-chrome,passed,0,5199
+2026-10-14,11:34:01,"Hat (Black & Zebra) — loads, no broken images, SEO basics present",desktop-chrome,passed,0,5439
+2026-10-14,11:34:01,"Homepage — loads, no broken images, SEO basics present",desktop-chrome,passed,0,5076
+2026-10-14,11:34:01,"Shop all — loads, no broken images, SEO basics present",desktop-chrome,passed,0,5084
+2026-10-14,11:34:01,"Hats collection — loads, no broken images, SEO basics present",desktop-chrome,passed,0,4814
+2026-10-14,11:34:01,"Checkout entry (cart) — loads, no broken images, SEO basics present",desktop-chrome,passed,0,4687
+2026-10-14,11:34:01,"FAQ / Contact — loads, no broken images, SEO basics present",desktop-chrome,passed,0,4739
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — price and add-to-cart present and working,desktop-chrome,passed,0,3922
+2026-10-14,11:34:01,Hat (Green & Leopard) — price and add-to-cart present and working,desktop-chrome,passed,0,4941
+2026-10-14,11:34:01,Hat (Black & Zebra) — price and add-to-cart present and working,desktop-chrome,passed,0,4752
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — mobile layout screenshot,desktop-chrome,skipped,0,98
+2026-10-14,11:34:01,Hat (Green & Leopard) — mobile layout screenshot,desktop-chrome,skipped,0,136
+2026-10-14,11:34:01,Hat (Black & Zebra) — mobile layout screenshot,desktop-chrome,skipped,0,111
+2026-10-14,11:34:01,"Jeans (Selvedge Denim) — loads, no broken images, SEO basics present",mobile,passed,0,10341
+2026-10-14,11:34:01,"Hat (Green & Leopard) — loads, no broken images, SEO basics present",mobile,passed,0,9486
+2026-10-14,11:34:01,"Hat (Black & Zebra) — loads, no broken images, SEO basics present",mobile,passed,0,10108
+2026-10-14,11:34:01,"Homepage — loads, no broken images, SEO basics present",mobile,passed,0,5417
+2026-10-14,11:34:01,"Shop all — loads, no broken images, SEO basics present",mobile,passed,0,4726
+2026-10-14,11:34:01,"Hats collection — loads, no broken images, SEO basics present",mobile,passed,0,4867
+2026-10-14,11:34:01,"Checkout entry (cart) — loads, no broken images, SEO basics present",mobile,passed,0,4543
+2026-10-14,11:34:01,"FAQ / Contact — loads, no broken images, SEO basics present",mobile,passed,0,4355
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — price and add-to-cart present and working,mobile,passed,0,14376
+2026-10-14,11:34:01,Hat (Green & Leopard) — price and add-to-cart present and working,mobile,passed,0,14207
+2026-10-14,11:34:01,Hat (Black & Zebra) — price and add-to-cart present and working,mobile,passed,0,14363
+2026-10-14,11:34:01,Jeans (Selvedge Denim) — mobile layout screenshot,mobile,passed,0,23888
+2026-10-14,11:34:01,Hat (Green & Leopard) — mobile layout screenshot,mobile,passed,0,18869
+2026-10-14,11:34:01,Hat (Black & Zebra) — mobile layout screenshot,mobile,passed,0,17922
