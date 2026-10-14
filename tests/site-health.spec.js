@@ -148,6 +148,12 @@ for (const r of REDIRECT_CHECKS) {
 for (const p of PRODUCT_PAGES) {
   test(`${p.name} — mobile layout screenshot`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile', 'Screenshot only needed once, on the mobile project');
+    // Same phone width, but a tall screen so the whole product block fits in
+    // view. The hat blocks (with the "Also in" box) are taller than an iPhone
+    // 13 screen; screenshotting them meant scrolling, which let the fixed
+    // bottom nav bar land on the shot and shifted the masks, so the hats
+    // failed on alternate days while the shorter jeans block never did.
+    await page.setViewportSize({ width: page.viewportSize().width, height: 1800 });
     await page.goto(p.path, { waitUntil: 'load' });
     await setConsent(page, false);
     await page.evaluate(() => document.fonts.ready);
@@ -160,8 +166,9 @@ for (const p of PRODUCT_PAGES) {
     // from and saves to the qa-data branch — without that, every run would
     // start with no baseline and never compare.
     // "v2" = the Sept 2026 redesign. A new name starts a fresh baseline
-    // instead of diffing the new theme against the old one.
-    const snapshotName = `v2${p.path.replace(/\//g, '_')}.png`;
+    // instead of diffing the new theme against the old one. "v3" = the tall
+    // screen above, so the first run records instead of failing on the switch.
+    const snapshotName = `v3${p.path.replace(/\//g, '_')}.png`;
     const baselinePath = testInfo.snapshotPath(snapshotName);
     const hadBaseline = fs.existsSync(baselinePath);
     // Screenshot only the product info block (title, price, sizes, add to bag,
